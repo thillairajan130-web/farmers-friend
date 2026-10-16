@@ -1,0 +1,1196 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Farmer's Friend - Comprehensive Agri Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            agri: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              800: '#166534',
+              900: '#14532d',
+              dark: '#0a381e'
+            },
+            harvest: {
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #166534; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-stone-100 text-stone-800 min-h-screen flex flex-col justify-between pb-24 md:pb-8">
+
+  <!-- ================= 1. HEADER ================= -->
+  <header class="bg-agri-900 text-white shadow-lg sticky top-0 z-40 border-b border-agri-800">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+      <!-- Logo & Branding -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-agri-700 p-2.5 rounded-2xl shadow-inner border border-agri-500/30 flex items-center justify-center">
+          <i class="fa-solid fa-wheat-awn text-2xl text-agri-100"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-xl font-extrabold tracking-tight">🌾 Farmer's Friend</h1>
+            <span class="bg-agri-500/20 text-agri-100 text-[10px] font-bold px-2 py-0.5 rounded-full border border-agri-500/30 hidden sm:flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-agri-500 animate-pulse"></span> GLOBAL LIVE
+            </span>
+          </div>
+          <p class="text-xs text-agri-100/80 font-medium" id="txt-app-subtitle">Smart Agri-Hub, Logistics & Community Marketplace</p>
+        </div>
+      </div>
+
+      <!-- Controls: Language, Currency, Cart, Auth -->
+      <div class="flex items-center flex-wrap gap-2">
+        <!-- Language Switcher -->
+        <select id="langSelect" onchange="changeLanguage()" class="bg-agri-800 hover:bg-agri-700 text-white text-xs font-semibold px-2.5 py-2 rounded-xl border border-agri-700 focus:outline-none cursor-pointer">
+          <option value="en">🌐 English</option>
+          <option value="es">🌐 Español</option>
+          <option value="hi">🌐 हिंदी</option>
+          <option value="fr">🌐 Français</option>
+          <option value="sw">🌐 Kiswahili</option>
+          <option value="ar">🌐 العربية</option>
+          <option value="zh">🌐 中文</option>
+          <option value="pt">🌐 Português</option>
+        </select>
+
+        <!-- Currency Switcher -->
+        <select id="currSelect" onchange="changeCurrency()" class="bg-agri-800 hover:bg-agri-700 text-amber-300 font-bold text-xs px-2.5 py-2 rounded-xl border border-agri-700 focus:outline-none cursor-pointer">
+          <option value="USD">$ USD</option>
+          <option value="EUR">€ EUR</option>
+          <option value="GBP">£ GBP</option>
+          <option value="INR">₹ INR</option>
+          <option value="KES">KSh KES</option>
+          <option value="NGN">₦ NGN</option>
+          <option value="BRL">R$ BRL</option>
+          <option value="CNY">¥ CNY</option>
+          <option value="AED">د.إ AED</option>
+          <option value="SAR">ر.س SAR</option>
+        </select>
+
+        <!-- Cart Button -->
+        <button onclick="switchTab('buy'); openCartDrawer();" class="relative bg-agri-800 hover:bg-agri-700 text-white p-2 px-3 rounded-xl border border-agri-700 transition flex items-center space-x-2 text-xs font-semibold">
+          <i class="fa-solid fa-cart-shopping text-harvest-500 text-sm"></i>
+          <span class="hidden md:inline" id="txt-cart-btn">Cart</span>
+          <span id="cart-badge" class="bg-harvest-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full">0</span>
+        </button>
+
+        <!-- Login / Register Button -->
+        <button onclick="openModal('authModal')" class="bg-harvest-600 hover:bg-harvest-700 text-white px-3 py-2 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-sm">
+          <i class="fa-solid fa-user"></i>
+          <span id="user-display-name">Login / Join</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= 2. WEATHER & ADVISORY BANNER ================= -->
+  <section class="max-w-7xl mx-auto px-4 mt-4 w-full">
+    <div class="bg-gradient-to-r from-agri-800 to-agri-900 text-white rounded-2xl p-4 md:p-5 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-agri-700">
+      <div class="flex items-center space-x-4">
+        <div class="bg-white/10 p-3 rounded-2xl backdrop-blur-sm text-3xl text-amber-300">
+          <i class="fa-solid fa-cloud-sun"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-3 flex-wrap">
+            <span class="text-2xl font-extrabold" id="weather-temp">28°C</span>
+            <span class="text-xs font-medium bg-white/10 px-2.5 py-1 rounded-lg" id="txt-weather-condition">Partly Cloudy</span>
+            <span class="text-xs text-agri-100 flex items-center gap-1"><i class="fa-solid fa-location-dot text-amber-400"></i> <span id="txt-weather-loc">Central Agri Zone</span></span>
+          </div>
+          <p class="text-xs text-agri-100 mt-1.5 flex flex-wrap gap-3">
+            <span><i class="fa-solid fa-droplet text-blue-300 mr-1"></i><span id="txt-hum-lbl">Humidity</span>: <strong>62%</strong></span>
+            <span><i class="fa-solid fa-wind text-stone-300 mr-1"></i><span id="txt-wind-lbl">Wind</span>: <strong>14 km/h</strong></span>
+            <span><i class="fa-solid fa-cloud-rain text-blue-200 mr-1"></i><span id="txt-rain-lbl">Rain Prob</span>: <strong>10%</strong></span>
+          </p>
+        </div>
+      </div>
+      <div class="bg-agri-700/60 border border-agri-500/30 rounded-xl p-3 w-full md:w-auto text-xs max-w-md">
+        <span class="font-bold text-amber-300 flex items-center gap-1 mb-0.5" id="txt-advisory-title">
+          <i class="fa-solid fa-robot"></i> AI Farm Advisory:
+        </span>
+        <p class="text-stone-100 leading-relaxed" id="txt-advisory-body">Optimal dry weather window for applying organic nitrogen fertilizers and preparing crop storage silos.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MAIN CONTENT AREA ================= -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-grow w-full">
+
+    <!-- Flash Alert System -->
+    <div id="notification-box" class="hidden mb-6 p-4 rounded-xl shadow-sm text-sm font-medium flex items-center justify-between transition-all">
+      <span id="notification-text"></span>
+      <button onclick="hideNotification()" class="text-lg font-bold">&times;</button>
+    </div>
+
+    <!-- ================= 3. TAB 1: BUY SUPPLIES (AGRI-STORE) ================= -->
+    <div id="tab-buy" class="tab-content active space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-6 rounded-2xl shadow-sm border border-stone-200">
+        <div>
+          <h2 class="text-2xl font-bold text-stone-900" id="txt-store-title">Agri-Store & Supplies</h2>
+          <p class="text-stone-500 text-sm mt-1" id="txt-store-desc">Certified high-grade seeds, fertilizers, and equipment delivered directly to your farm.</p>
+        </div>
+        <div class="w-full md:w-auto flex gap-2">
+          <input type="text" id="search-product" placeholder="Search seeds, tools..." onkeyup="filterProducts()" class="px-4 py-2.5 rounded-xl text-stone-800 bg-stone-50 border border-stone-300 w-full md:w-72 focus:outline-none focus:ring-2 focus:ring-agri-500 text-sm">
+        </div>
+      </div>
+
+      <!-- Categories -->
+      <div class="flex gap-2 overflow-x-auto pb-2">
+        <button onclick="filterCategory('all', this)" class="cat-btn bg-agri-800 text-white px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-sm" id="cat-all">All Supplies</button>
+        <button onclick="filterCategory('Seeds', this)" class="cat-btn bg-white border border-stone-200 text-stone-700 hover:bg-agri-50 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-sm" id="cat-seeds">Seeds & Hybrid Grains</button>
+        <button onclick="filterCategory('Fertilizers', this)" class="cat-btn bg-white border border-stone-200 text-stone-700 hover:bg-agri-50 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-sm" id="cat-fertilizers">Organic Fertilizers</button>
+        <button onclick="filterCategory('Equipment', this)" class="cat-btn bg-white border border-stone-200 text-stone-700 hover:bg-agri-50 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-sm" id="cat-equipment">Tools & Irrigation</button>
+      </div>
+
+      <!-- Products Grid -->
+      <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic rendering via JS -->
+      </div>
+    </div>
+
+    <!-- ================= 4. TAB 2: SELL PRODUCE (MARKETPLACE) ================= -->
+    <div id="tab-sell" class="tab-content space-y-6">
+      <div class="bg-harvest-700 text-white p-6 rounded-2xl shadow-sm flex justify-between items-center">
+        <div>
+          <h2 class="text-2xl font-bold" id="txt-sell-title">Farmer Marketplace</h2>
+          <p class="text-harvest-100 text-sm mt-1" id="txt-sell-desc">Sell harvested crops directly to bulk buyers, food processors, and co-ops with zero commission fees.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Add Listing Form -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-stone-200 lg:col-span-1">
+          <h3 class="text-lg font-bold text-stone-800 mb-4 flex items-center gap-2">
+            <i class="fa-solid fa-circle-plus text-agri-700"></i> <span id="txt-list-harvest">List Harvested Crop</span>
+          </h3>
+          <form id="listing-form" onsubmit="handleNewListing(event)" class="space-y-4">
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-500 mb-1" id="lbl-crop-name">Crop Name</label>
+              <input type="text" id="crop-name" required placeholder="e.g. Organic Basmati Rice" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-agri-500 focus:outline-none text-sm bg-stone-50">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-xs font-bold uppercase text-stone-500 mb-1" id="lbl-crop-qty">Quantity</label>
+                <input type="text" id="crop-qty" required placeholder="e.g. 50" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-agri-500 focus:outline-none text-sm bg-stone-50">
+              </div>
+              <div>
+                <label class="block text-xs font-bold uppercase text-stone-500 mb-1" id="lbl-crop-unit">Unit</label>
+                <select id="crop-unit" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-agri-500 focus:outline-none text-sm bg-stone-50">
+                  <option value="Quintals">Quintals</option>
+                  <option value="Kg">Kilograms (Kg)</option>
+                  <option value="Tons">Tons</option>
+                  <option value="Bags">Bags</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-500 mb-1" id="lbl-crop-price">Expected Price ($ / Unit in USD)</label>
+              <input type="number" step="0.01" id="crop-price" required placeholder="e.g. 250" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-agri-500 focus:outline-none text-sm bg-stone-50">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-500 mb-1" id="lbl-crop-loc">Farm Location / Region</label>
+              <input type="text" id="crop-location" required placeholder="e.g. Central Agri Hub" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 focus:ring-2 focus:ring-agri-500 focus:outline-none text-sm bg-stone-50">
+            </div>
+            <div>
+              <label class="block text-xs font-bold uppercase text-stone-500 mb-1" id="lbl-crop-photo">Crop Photo</label>
+              <div class="border-2 border-dashed border-stone-300 rounded-xl p-4 text-center bg-stone-50 cursor-pointer hover:bg-stone-100 transition">
+                <i class="fa-solid fa-camera text-2xl text-stone-400 mb-1"></i>
+                <p class="text-xs text-stone-500" id="txt-upload-prompt">Tap to upload crop photo</p>
+                <input type="file" id="crop-img-file" accept="image/*" class="hidden" onchange="previewUploadName(this)">
+                <span id="file-chosen-label" class="text-xs font-semibold text-agri-700 mt-1 block"></span>
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-agri-800 hover:bg-agri-900 text-white font-semibold py-3 rounded-xl transition shadow-sm text-sm" id="btn-pub-listing">
+              Publish Listing
+            </button>
+          </form>
+        </div>
+
+        <!-- Active Listings Feed -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-stone-800" id="txt-active-offers">Active Marketplace Offers</h3>
+            <span id="listing-count" class="text-xs bg-agri-100 text-agri-800 px-2.5 py-1 rounded-full font-bold">0 Active</span>
+          </div>
+          <div id="listings-container" class="space-y-3">
+            <!-- Dynamic rendering via JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 5. TAB 3: WEEKLY MARKET RATES (MANDI RATES) ================= -->
+    <div id="tab-market" class="tab-content space-y-6">
+      <div class="bg-agri-900 text-white p-6 rounded-2xl shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold" id="txt-rates-title">Weekly Mandi Market Values</h2>
+          <p class="text-agri-100 text-sm mt-1" id="txt-rates-desc">Real-time agricultural market prices & weekly price percentage trends.</p>
+        </div>
+        <input type="text" id="search-market" placeholder="Filter crop or market..." onkeyup="filterMarketTable()" class="px-4 py-2 rounded-xl text-stone-800 bg-white border border-stone-200 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 w-full sm:w-64">
+      </div>
+
+      <!-- Trend Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="market-cards">
+        <!-- Dynamic rendering via JS -->
+      </div>
+
+      <!-- Price Table -->
+      <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-sm">
+            <thead>
+              <tr class="bg-stone-50 text-stone-600 uppercase text-xs tracking-wider border-b border-stone-200">
+                <th class="p-4 font-bold" id="th-commodity">Commodity</th>
+                <th class="p-4 font-bold" id="th-market">Market / Mandi</th>
+                <th class="p-4 font-bold" id="th-price">Current Price / Qtl</th>
+                <th class="p-4 font-bold" id="th-change">Weekly Change</th>
+                <th class="p-4 font-bold" id="th-status">Trend Status</th>
+              </tr>
+            </thead>
+            <tbody id="market-table-body" class="divide-y divide-stone-100">
+              <!-- Dynamic rendering via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= 6. TAB 4: FARMING VIDEOS & KNOWLEDGE HUB ================= -->
+    <div id="tab-videos" class="tab-content space-y-6">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-stone-900 text-white p-6 rounded-2xl shadow-sm">
+        <div>
+          <h2 class="text-2xl font-bold" id="txt-videos-title">Agri Knowledge Hub & Videos</h2>
+          <p class="text-stone-300 text-sm mt-1" id="txt-videos-desc">Expert video tutorials on pest management, soil health, drip irrigation, and harvesting.</p>
+        </div>
+        <button onclick="openModal('videoModal')" class="bg-agri-700 hover:bg-agri-600 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-video"></i> <span id="txt-btn-upload-vid">Upload Tutorial</span>
+        </button>
+      </div>
+
+      <div id="video-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Dynamic rendering via JS -->
+      </div>
+    </div>
+
+    <!-- ================= 7. TAB 5: FARM LOGISTICS & EQUIPMENT TRACKER ================= -->
+    <div id="tab-logistics" class="tab-content space-y-6">
+      <div class="bg-agri-800 text-white p-6 rounded-2xl shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <h2 class="text-2xl font-bold" id="txt-logistics-title">Farm Logistics & Equipment Tracker</h2>
+          <p class="text-agri-100 text-sm mt-1" id="txt-logistics-desc">Track tractor rentals, schedule seasonal farm operations, and monitor grain storage silo inventories.</p>
+        </div>
+        <div class="flex gap-2 w-full md:w-auto">
+          <button onclick="openModal('equipmentModal')" class="bg-harvest-600 hover:bg-harvest-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-tractor"></i> <span id="txt-btn-rent-eq">Book Equipment</span>
+          </button>
+          <button onclick="openModal('taskModal')" class="bg-white text-agri-900 hover:bg-agri-50 px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+            <i class="fa-solid fa-plus"></i> <span id="txt-btn-add-task">Add Field Task</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Logistics Grid Dashboard -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+        <!-- 1. Equipment Rentals -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+          <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+            <h3 class="font-bold text-stone-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-tractor text-harvest-600"></i> <span id="txt-rentals-lbl">Equipment Rentals</span>
+            </h3>
+            <span id="rental-count" class="text-xs bg-harvest-50 text-harvest-700 px-2 py-0.5 rounded-full font-bold">2 Active</span>
+          </div>
+          <div id="rentals-container" class="space-y-3">
+            <!-- Dynamic rendering via JS -->
+          </div>
+        </div>
+
+        <!-- 2. Field Tasks & Schedules -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+          <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+            <h3 class="font-bold text-stone-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-list-check text-agri-700"></i> <span id="txt-tasks-lbl">Field Operations</span>
+            </h3>
+            <span id="task-count" class="text-xs bg-agri-50 text-agri-800 px-2 py-0.5 rounded-full font-bold">3 Tasks</span>
+          </div>
+          <div id="tasks-container" class="space-y-3">
+            <!-- Dynamic rendering via JS -->
+          </div>
+        </div>
+
+        <!-- 3. Grain & Storage Inventory -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-stone-200 space-y-4">
+          <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+            <h3 class="font-bold text-stone-800 text-base flex items-center gap-2">
+              <i class="fa-solid fa-warehouse text-agri-900"></i> <span id="txt-storage-lbl">Storage Bin Inventory</span>
+            </h3>
+            <button onclick="openModal('storageModal')" class="text-xs text-agri-700 hover:text-agri-900 font-bold">+ Update</button>
+          </div>
+          <div id="storage-container" class="space-y-3">
+            <!-- Dynamic rendering via JS -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ================= 8. BOTTOM NAVIGATION BAR (MOBILE & DESKTOP) ================= -->
+  <nav class="bg-white border-t border-stone-200 fixed bottom-0 left-0 right-0 z-40 shadow-xl">
+    <div class="max-w-2xl mx-auto flex justify-around py-2">
+      <button onclick="switchTab('buy')" id="nav-buy" class="nav-btn flex flex-col items-center text-agri-800 font-bold text-xs py-1 px-2 transition">
+        <i class="fa-solid fa-store text-lg mb-0.5"></i>
+        <span id="nav-txt-buy">Store</span>
+      </button>
+      <button onclick="switchTab('sell')" id="nav-sell" class="nav-btn flex flex-col items-center text-stone-400 font-bold text-xs py-1 px-2 transition">
+        <i class="fa-solid fa-handshake text-lg mb-0.5"></i>
+        <span id="nav-txt-sell">Sell</span>
+      </button>
+      <button onclick="switchTab('market')" id="nav-market" class="nav-btn flex flex-col items-center text-stone-400 font-bold text-xs py-1 px-2 transition">
+        <i class="fa-solid fa-chart-line text-lg mb-0.5"></i>
+        <span id="nav-txt-rates">Rates</span>
+      </button>
+      <button onclick="switchTab('videos')" id="nav-videos" class="nav-btn flex flex-col items-center text-stone-400 font-bold text-xs py-1 px-2 transition">
+        <i class="fa-solid fa-circle-play text-lg mb-0.5"></i>
+        <span id="nav-txt-videos">Videos</span>
+      </button>
+      <button onclick="switchTab('logistics')" id="nav-logistics" class="nav-btn flex flex-col items-center text-stone-400 font-bold text-xs py-1 px-2 transition">
+        <i class="fa-solid fa-truck-ramp-box text-lg mb-0.5"></i>
+        <span id="nav-txt-logistics">Logistics</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ================= MODALS & DRAWERS ================= -->
+
+  <!-- Shopping Cart Side Drawer -->
+  <div id="cart-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex justify-end transition-opacity">
+    <div class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col justify-between p-6">
+      <div>
+        <div class="flex justify-between items-center border-b border-stone-200 pb-4 mb-4">
+          <h3 class="text-lg font-bold text-stone-900 flex items-center gap-2">
+            <i class="fa-solid fa-cart-shopping text-agri-700"></i> <span id="txt-cart-title">Your Order Cart</span>
+          </h3>
+          <button onclick="closeCartDrawer()" class="text-stone-400 hover:text-stone-700 text-2xl font-bold">&times;</button>
+        </div>
+        <div id="cart-items" class="space-y-3 overflow-y-auto max-h-[60vh]">
+          <!-- Dynamic rendering via JS -->
+        </div>
+      </div>
+      <div class="border-t border-stone-200 pt-4 space-y-3">
+        <div class="flex justify-between font-extrabold text-xl text-stone-900">
+          <span id="txt-cart-total-lbl">Total Payable:</span>
+          <span id="cart-total">$0.00</span>
+        </div>
+        <button onclick="checkoutCart()" class="w-full bg-agri-800 hover:bg-agri-900 text-white font-bold py-3.5 rounded-xl shadow-md transition text-base" id="btn-checkout">
+          Confirm Order & Pay
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal (Login / Register) -->
+  <div id="authModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-lg text-stone-900">Sign in to Farmer's Friend</h3>
+        <button onclick="closeModal('authModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleAuth(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Select Account Type</label>
+          <select id="auth-role" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+            <option value="Farmer">🌾 Farmer / Grower</option>
+            <option value="Buyer">🏪 Buyer / Trader / Co-op</option>
+            <option value="Equipment Owner">🚜 Equipment / Fleet Provider</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Phone Number or Email</label>
+          <input type="text" id="auth-input" required placeholder="+1 234 567 890" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Password</label>
+          <input type="password" required placeholder="••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <button type="submit" class="w-full bg-agri-800 hover:bg-agri-900 text-white font-bold py-3 rounded-xl text-sm transition">
+          Login / Create Account
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Upload Video Modal -->
+  <div id="videoModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-lg text-stone-900">Upload Knowledge Tutorial</h3>
+        <button onclick="closeModal('videoModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleNewVideo(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Video Title</label>
+          <input type="text" id="vid-title" required placeholder="e.g. Drip Irrigation Maintenance" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Instructor / Expert Name</label>
+          <input type="text" id="vid-author" required placeholder="e.g. Dr. R. Sharma" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Description</label>
+          <textarea id="vid-desc" required placeholder="Key learning takeaways for farmers..." class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50 h-20"></textarea>
+        </div>
+        <button type="submit" class="w-full bg-agri-800 hover:bg-agri-900 text-white font-bold py-3 rounded-xl text-sm transition">
+          Publish Tutorial Video
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Equipment Rental Modal -->
+  <div id="equipmentModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-lg text-stone-900">Book Farm Machinery</h3>
+        <button onclick="closeModal('equipmentModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleNewRental(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Select Machinery</label>
+          <select id="rent-type" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+            <option value="John Deere 75HP Tractor">🚜 Heavy Duty Tractor (75 HP)</option>
+            <option value="Combine Harvester">🌾 Heavy Combine Harvester</option>
+            <option value="Rotavator Tiller">🌱 Soil Rotavator Tiller</option>
+            <option value="Drone Crop Sprayer">🛸 Automated Drone Sprayer</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Booking Duration (Days)</label>
+          <input type="number" id="rent-days" required min="1" value="2" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Daily Rate (USD)</label>
+          <input type="number" id="rent-rate" required value="85" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <button type="submit" class="w-full bg-harvest-600 hover:bg-harvest-700 text-white font-bold py-3 rounded-xl text-sm transition">
+          Confirm Rental Booking
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Task Schedule Modal -->
+  <div id="taskModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-lg text-stone-900">Schedule Field Operation</h3>
+        <button onclick="closeModal('taskModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleNewTask(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Field Operation Name</label>
+          <input type="text" id="task-title" required placeholder="e.g. Organic NPK Soil Spraying" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Target Field / Plot</label>
+          <input type="text" id="task-field" required placeholder="e.g. North Acre #3" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Scheduled Date</label>
+          <input type="date" id="task-date" required class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <button type="submit" class="w-full bg-agri-800 hover:bg-agri-900 text-white font-bold py-3 rounded-xl text-sm transition">
+          Add Task to Schedule
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Storage Modal -->
+  <div id="storageModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl p-6 space-y-4">
+      <div class="flex justify-between items-center border-b border-stone-100 pb-3">
+        <h3 class="font-bold text-lg text-stone-900">Update Storage Silo</h3>
+        <button onclick="closeModal('storageModal')" class="text-stone-400 hover:text-stone-700 text-xl font-bold">&times;</button>
+      </div>
+      <form onsubmit="handleNewStorage(event)" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Silo Bin Name</label>
+          <input type="text" id="bin-name" required placeholder="e.g. Silo #2 - Wheat Storage" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Stored Stored Quantity (Tons)</label>
+          <input type="number" id="bin-qty" required placeholder="e.g. 45" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <div>
+          <label class="block text-xs font-bold uppercase text-stone-500 mb-1">Capacity Limit (Tons)</label>
+          <input type="number" id="bin-cap" required placeholder="e.g. 100" class="w-full px-3.5 py-2.5 rounded-xl border border-stone-300 text-sm focus:outline-none focus:ring-2 focus:ring-agri-500 bg-stone-50">
+        </div>
+        <button type="submit" class="w-full bg-agri-800 hover:bg-agri-900 text-white font-bold py-3 rounded-xl text-sm transition">
+          Update Inventory
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ================= APPLICATION JAVASCRIPT ================= -->
+  <script>
+    // --- Currency Conversion Data ---
+    const exchangeRates = {
+      USD: { rate: 1.0, symbol: '$' },
+      EUR: { rate: 0.92, symbol: '€' },
+      GBP: { rate: 0.79, symbol: '£' },
+      INR: { rate: 83.1, symbol: '₹' },
+      KES: { rate: 132.5, symbol: 'KSh ' },
+      NGN: { rate: 1400.0, symbol: '₦' },
+      BRL: { rate: 5.15, symbol: 'R$ ' },
+      CNY: { rate: 7.23, symbol: '¥ ' },
+      AED: { rate: 3.67, symbol: 'د.إ ' },
+      SAR: { rate: 3.75, symbol: 'ر.س ' }
+    };
+
+    // --- Language Translations Dictionary ---
+    const translations = {
+      en: {
+        appSub: "Smart Agri-Hub, Logistics & Community Marketplace",
+        cartBtn: "Cart",
+        weatherCond: "Partly Cloudy", weatherLoc: "Central Agri Zone",
+        humLbl: "Humidity", windLbl: "Wind", rainLbl: "Rain Prob",
+        advisoryTitle: "AI Farm Advisory", advisoryBody: "Optimal dry weather window for applying organic nitrogen fertilizers and preparing crop storage silos.",
+        storeTitle: "Agri-Store & Supplies", storeDesc: "Certified high-grade seeds, fertilizers, and equipment delivered directly to your farm.",
+        catAll: "All Supplies", catSeeds: "Seeds & Hybrid Grains", catFertilizers: "Organic Fertilizers", catEquipment: "Tools & Irrigation",
+        sellTitle: "Farmer Marketplace", sellDesc: "Sell harvested crops directly to bulk buyers, food processors, and co-ops with zero commission fees.",
+        listHarvest: "List Harvested Crop", lblCropName: "Crop Name", lblCropQty: "Quantity", lblCropUnit: "Unit", lblCropPrice: "Expected Price ($ / Unit in USD)", lblCropLoc: "Farm Location / Region", lblCropPhoto: "Crop Photo", uploadPrompt: "Tap to upload crop photo", pubListing: "Publish Listing", activeOffers: "Active Marketplace Offers",
+        ratesTitle: "Weekly Mandi Market Values", ratesDesc: "Real-time agricultural market prices & weekly price percentage trends.",
+        thCommodity: "Commodity", thMarket: "Market / Mandi", thPrice: "Current Price / Qtl", thChange: "Weekly Change", thStatus: "Trend Status",
+        videosTitle: "Agri Knowledge Hub & Videos", videosDesc: "Expert video tutorials on pest management, soil health, drip irrigation, and harvesting.",
+        btnUploadVid: "Upload Tutorial",
+        logisticsTitle: "Farm Logistics & Equipment Tracker", logisticsDesc: "Track tractor rentals, schedule seasonal farm operations, and monitor grain storage silo inventories.",
+        btnRentEq: "Book Equipment", btnAddTask: "Add Field Task", rentalsLbl: "Equipment Rentals", tasksLbl: "Field Operations", storageLbl: "Storage Bin Inventory",
+        navBuy: "Store", navSell: "Sell", navRates: "Rates", navVideos: "Videos", navLogistics: "Logistics",
+        cartTitle: "Your Order Cart", cartTotalLbl: "Total Payable:", btnCheckout: "Confirm Order & Pay"
+      },
+      es: {
+        appSub: "Plataforma Agrícola Integral y Logística",
+        cartBtn: "Carrito",
+        weatherCond: "Parcialmente Nublado", weatherLoc: "Zona Agrícola Central",
+        humLbl: "Humedad", windLbl: "Viento", rainLbl: "Prob. Lluvia",
+        advisoryTitle: "Asesoría Agrícola IA", advisoryBody: "Ventana de clima seco ideal para aplicar fertilizantes orgánicos y preparar silos.",
+        storeTitle: "Tienda Agrícola", storeDesc: "Semillas certificadas, fertilizantes y equipos entregados en su finca.",
+        catAll: "Todo", catSeeds: "Semillas", catFertilizers: "Fertilizantes", catEquipment: "Herramientas",
+        sellTitle: "Mercado de Agricultores", sellDesc: "Venda cosechas directamente a compradores sin comisiones.",
+        listHarvest: "Publicar Cosecha", lblCropName: "Nombre del Cultivo", lblCropQty: "Cantidad", lblCropUnit: "Unidad", lblCropPrice: "Precio Esperado (USD)", lblCropLoc: "Ubicación", lblCropPhoto: "Foto", uploadPrompt: "Toca para subir foto", pubListing: "Publicar Oferta", activeOffers: "Ofertas Activas",
+        ratesTitle: "Precios Semanales de Mercado", ratesDesc: "Precios de mercado en tiempo real y tendencias semanales.",
+        thCommodity: "Producto", thMarket: "Mercado", thPrice: "Precio Actual / Qtl", thChange: "Cambio Semanal", thStatus: "Tendencia",
+        videosTitle: "Centro de Conocimiento y Videos", videosDesc: "Tutoriales sobre manejo de plagas, riego y suelo.",
+        btnUploadVid: "Subir Video",
+        logisticsTitle: "Logística y Alquiler de Equipos", logisticsDesc: "Siga alquileres de tractores, programe tareas y controle silos de grano.",
+        btnRentEq: "Alquilar Maquinaria", btnAddTask: "Agregar Tarea", rentalsLbl: "Alquileres", tasksLbl: "Operaciones", storageLbl: "Inventario en Silos",
+        navBuy: "Tienda", navSell: "Vender", navRates: "Tarifas", navVideos: "Videos", navLogistics: "Logística",
+        cartTitle: "Su Carrito de Compras", cartTotalLbl: "Total a Pagar:", btnCheckout: "Confirmar Pedido"
+      },
+      hi: {
+        appSub: "स्मार्ट कृषि-हब, लॉजिस्टिक्स और किसान बाज़ार",
+        cartBtn: "कार्ट",
+        weatherCond: "आंशिक रूप से बादल", weatherLoc: "मध्य कृषि क्षेत्र",
+        humLbl: "नमी", windLbl: "हवा", rainLbl: "बारिश संभावना",
+        advisoryTitle: "एआई कृषि सलाह", advisoryBody: "जैविक उर्वरक डालने और फसल भंडारण तैयार करने के लिए उपयुक्त सूखा मौसम।",
+        storeTitle: "कृषि-स्टोर और आपूर्ति", storeDesc: "प्रमाणित उच्च गुणवत्ता वाले बीज, उर्वरक और उपकरण सीधे आपके खेत तक।",
+        catAll: "सभी आपूर्ति", catSeeds: "बीज और हाइब्रिड अनाज", catFertilizers: "जैविक उर्वरक", catEquipment: "उपकरण और सिंचाई",
+        sellTitle: "किसान बाज़ार", sellDesc: "बिना किसी बिचौलिए के अपनी फसल सीधे थोक खरीदारों को बेचें।",
+        listHarvest: "फसल बिक्री के लिए जोड़ें", lblCropName: "फसल का नाम", lblCropQty: "मात्रा", lblCropUnit: "इकाई", lblCropPrice: "अपेक्षित मूल्य (USD)", lblCropLoc: "स्थान / मंडी", lblCropPhoto: "फसल की तस्वीर", uploadPrompt: "तस्वीर अपलोड करने के लिए टैप करें", pubListing: "सूची प्रकाशित करें", activeOffers: "सक्रिय बाज़ार ऑफ़र",
+        ratesTitle: "साप्ताहिक मंडी भाव", ratesDesc: "वास्तविक समय के कृषि बाजार मूल्य और प्रतिशत रुझान।",
+        thCommodity: "जिंस (फसल)", thMarket: "मंडी", thPrice: "वर्तमान मूल्य / क्विंटल", thChange: "साप्ताहिक बदलाव", thStatus: "रुझान स्थिति",
+        videosTitle: "कृषि ज्ञान केंद्र और वीडियो", videosDesc: "कीट नियंत्रण, मिट्टी स्वास्थ्य और सिंचाई पर विशेषज्ञ वीडियो ट्यूटोरियल।",
+        btnUploadVid: "ट्यूटोरियल अपलोड करें",
+        logisticsTitle: "फार्म लॉजिस्टिक्स और उपकरण ट्रैकर", logisticsDesc: "ट्रैक्टर किराए पर लें, खेत के कामों का समय निर्धारित करें और साइलो भंडारण देखें।",
+        btnRentEq: "उपकरण बुक करें", btnAddTask: "खेत का काम जोड़ें", rentalsLbl: "उपकरण किराया", tasksLbl: "खेत संचालन", storageLbl: "भंडारण बिन स्थिति",
+        navBuy: "स्टोर", navSell: "बेचें", navRates: "मंडी भाव", navVideos: "वीडियो", navLogistics: "लॉजिस्टिक्स",
+        cartTitle: "आपका आर्डर कार्ट", cartTotalLbl: "कुल देय राशि:", btnCheckout: "ऑर्डर की पुष्टि करें"
+      }
+    };
+
+    // --- State Management ---
+    let currentCurrency = 'USD';
+    let currentLang = 'en';
+
+    let products = [
+      { id: 1, name: 'Hybrid High-Yield Wheat Seeds', category: 'Seeds', priceUSD: 45.00, unit: 'Bag (25kg)', img: 'https://placehold.co/400x300/166534/ffffff?text=Wheat+Seeds' },
+      { id: 2, name: 'Organic Vermicompost Fertilizer', category: 'Fertilizers', priceUSD: 28.50, unit: 'Bag (50kg)', img: 'https://placehold.co/400x300/15803d/ffffff?text=Vermicompost' },
+      { id: 3, name: 'Heavy Duty Pruning Shears', category: 'Equipment', priceUSD: 19.99, unit: 'Piece', img: 'https://placehold.co/400x300/14532d/ffffff?text=Pruning+Shears' },
+      { id: 4, name: 'Solar Drip Irrigation Starter Kit', category: 'Equipment', priceUSD: 120.00, unit: 'Kit (1 Acre)', img: 'https://placehold.co/400x300/0a381e/ffffff?text=Drip+Irrigation' },
+      { id: 5, name: 'Organic Neem Oil Pesticide', category: 'Fertilizers', priceUSD: 22.00, unit: 'Bottle (5L)', img: 'https://placehold.co/400x300/22c55e/ffffff?text=Neem+Pesticide' },
+      { id: 6, name: 'Grade-A Paddy Rice Seeds', category: 'Seeds', priceUSD: 55.00, unit: 'Bag (30kg)', img: 'https://placehold.co/400x300/166534/ffffff?text=Paddy+Seeds' }
+    ];
+
+    let listings = [
+      { id: 101, crop: 'Fresh Red Tomatoes', qty: '40 Quintals', priceUSD: 35.00, location: 'Nashik Mandi', img: 'https://placehold.co/400x300/d97706/ffffff?text=Tomatoes' },
+      { id: 102, crop: 'Organic Yellow Corn / Maize', qty: '120 Quintals', priceUSD: 42.00, location: 'Central Hub', img: 'https://placehold.co/400x300/b45309/ffffff?text=Corn' }
+    ];
+
+    let marketRates = [
+      { commodity: 'Basmati Paddy', market: 'North Mandi', priceUSD: 310.00, change: '+4.5%', trend: 'up' },
+      { commodity: 'Durum Wheat', market: 'Central Hub', priceUSD: 240.00, change: '+3.2%', trend: 'up' },
+      { commodity: 'Ripe Tomatoes', market: 'Southern Market', priceUSD: 180.00, change: '-1.5%', trend: 'down' },
+      { commodity: 'Raw Cotton', market: 'Western Mandi', priceUSD: 450.00, change: '+5.1%', trend: 'up' },
+      { commodity: 'Yellow Soybeans', market: 'Eastern Hub', priceUSD: 420.00, change: '0.0%', trend: 'stable' }
+    ];
+
+    let videos = [
+      { id: 1, title: 'Modern Drip Irrigation Setup Guide', author: 'AgriTech Expert Panel', desc: 'Step-by-step setup to save 50% water while boosting crop yields.' },
+      { id: 2, title: 'Organic Pest Management with Neem Oil', author: 'Dr. Anita Verma', desc: 'Safe and cost-effective organic insect repellent methods.' },
+      { id: 3, title: 'Maximizing Winter Wheat Crop Output', author: 'Agricultural University', desc: 'Optimal fertilizer timing and soil moisture guidelines.' }
+    ];
+
+    // TAB 5 Data: Logistics & Equipment
+    let rentals = [
+      { id: 201, machine: 'John Deere 75HP Tractor', days: 3, rateUSD: 85.00, status: 'Active Booking' },
+      { id: 202, machine: 'Automated Drone Sprayer', days: 1, rateUSD: 120.00, status: 'Scheduled (Tomorrow)' }
+    ];
+
+    let tasks = [
+      { id: 301, name: 'Sowing Wheat Seeds', field: 'Plot B (5 Acres)', date: '2026-10-20', status: 'Pending' },
+      { id: 302, name: 'NPK Fertilizer Spraying', field: 'Plot A (3 Acres)', date: '2026-10-18', status: 'In Progress' }
+    ];
+
+    let storageBins = [
+      { id: 401, bin: 'Silo #1 - Wheat Granary', usedTons: 65, capTons: 100 },
+      { id: 402, bin: 'Bin #2 - Paddy Storage', usedTons: 30, capTons: 50 }
+    ];
+
+    let cart = [];
+    let currentCategory = 'all';
+
+    // --- Currency Helper ---
+    function formatPrice(usdVal) {
+      const c = exchangeRates[currentCurrency];
+      const converted = (usdVal * c.rate).toFixed(2);
+      return `${c.symbol}${converted}`;
+    }
+
+    function changeCurrency() {
+      currentCurrency = document.getElementById('currSelect').value;
+      renderProducts();
+      renderListings();
+      renderMarketData();
+      renderRentals();
+      updateCartDrawer();
+    }
+
+    // --- Language Helper ---
+    function changeLanguage() {
+      currentLang = document.getElementById('langSelect').value;
+      const t = translations[currentLang] || translations['en'];
+
+      document.getElementById('txt-app-subtitle').innerText = t.appSub;
+      document.getElementById('txt-cart-btn').innerText = t.cartBtn;
+      document.getElementById('txt-weather-condition').innerText = t.weatherCond;
+      document.getElementById('txt-weather-loc').innerText = t.weatherLoc;
+      document.getElementById('txt-hum-lbl').innerText = t.humLbl;
+      document.getElementById('txt-wind-lbl').innerText = t.windLbl;
+      document.getElementById('txt-rain-lbl').innerText = t.rainLbl;
+      document.getElementById('txt-advisory-title').innerHTML = `<i class="fa-solid fa-robot"></i> ${t.advisoryTitle}:`;
+      document.getElementById('txt-advisory-body').innerText = t.advisoryBody;
+
+      document.getElementById('txt-store-title').innerText = t.storeTitle;
+      document.getElementById('txt-store-desc').innerText = t.storeDesc;
+      document.getElementById('cat-all').innerText = t.catAll;
+      document.getElementById('cat-seeds').innerText = t.catSeeds;
+      document.getElementById('cat-fertilizers').innerText = t.catFertilizers;
+      document.getElementById('cat-equipment').innerText = t.catEquipment;
+
+      document.getElementById('txt-sell-title').innerText = t.sellTitle;
+      document.getElementById('txt-sell-desc').innerText = t.sellDesc;
+      document.getElementById('txt-list-harvest').innerText = t.listHarvest;
+      document.getElementById('lbl-crop-name').innerText = t.lblCropName;
+      document.getElementById('lbl-crop-qty').innerText = t.lblCropQty;
+      document.getElementById('lbl-crop-unit').innerText = t.lblCropUnit;
+      document.getElementById('lbl-crop-price').innerText = t.lblCropPrice;
+      document.getElementById('lbl-crop-loc').innerText = t.lblCropLoc;
+      document.getElementById('lbl-crop-photo').innerText = t.lblCropPhoto;
+      document.getElementById('txt-upload-prompt').innerText = t.uploadPrompt;
+      document.getElementById('btn-pub-listing').innerText = t.pubListing;
+      document.getElementById('txt-active-offers').innerText = t.activeOffers;
+
+      document.getElementById('txt-rates-title').innerText = t.ratesTitle;
+      document.getElementById('txt-rates-desc').innerText = t.ratesDesc;
+      document.getElementById('th-commodity').innerText = t.thCommodity;
+      document.getElementById('th-market').innerText = t.thMarket;
+      document.getElementById('th-price').innerText = t.thPrice;
+      document.getElementById('th-change').innerText = t.thChange;
+      document.getElementById('th-status').innerText = t.thStatus;
+
+      document.getElementById('txt-videos-title').innerText = t.videosTitle;
+      document.getElementById('txt-videos-desc').innerText = t.videosDesc;
+      document.getElementById('txt-btn-upload-vid').innerText = t.btnUploadVid;
+
+      document.getElementById('txt-logistics-title').innerText = t.logisticsTitle;
+      document.getElementById('txt-logistics-desc').innerText = t.logisticsDesc;
+      document.getElementById('txt-btn-rent-eq').innerText = t.btnRentEq;
+      document.getElementById('txt-btn-add-task').innerText = t.btnAddTask;
+      document.getElementById('txt-rentals-lbl').innerText = t.rentalsLbl;
+      document.getElementById('txt-tasks-lbl').innerText = t.tasksLbl;
+      document.getElementById('txt-storage-lbl').innerText = t.storageLbl;
+
+      document.getElementById('nav-txt-buy').innerText = t.navBuy;
+      document.getElementById('nav-txt-sell').innerText = t.navSell;
+      document.getElementById('nav-txt-rates').innerText = t.navRates;
+      document.getElementById('nav-txt-videos').innerText = t.navVideos;
+      document.getElementById('nav-txt-logistics').innerText = t.navLogistics;
+
+      document.getElementById('txt-cart-title').innerText = t.cartTitle;
+      document.getElementById('txt-cart-total-lbl').innerText = t.cartTotalLbl;
+      document.getElementById('btn-checkout').innerText = t.btnCheckout;
+    }
+
+    // --- Tab Navigation ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-btn').forEach(el => {
+        el.classList.remove('text-agri-800');
+        el.classList.add('text-stone-400');
+      });
+
+      document.getElementById('tab-' + tabId).classList.add('active');
+      const activeNav = document.getElementById('nav-' + tabId);
+      if (activeNav) {
+        activeNav.classList.remove('text-stone-400');
+        activeNav.classList.add('text-agri-800');
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- Modal Helpers ---
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    // --- Notification Banner ---
+    function showNotification(msg, isSuccess = true) {
+      const box = document.getElementById('notification-box');
+      const text = document.getElementById('notification-text');
+      text.innerText = msg;
+      box.className = `mb-6 p-4 rounded-xl shadow-sm text-sm font-bold flex items-center justify-between transition-all ${isSuccess ? 'bg-agri-100 text-agri-900 border border-agri-200' : 'bg-amber-100 text-amber-900 border border-amber-200'}`;
+      box.classList.remove('hidden');
+      setTimeout(() => hideNotification(), 4000);
+    }
+    function hideNotification() { document.getElementById('notification-box').classList.add('hidden'); }
+
+    // --- Auth Handler ---
+    function handleAuth(e) {
+      e.preventDefault();
+      const role = document.getElementById('auth-role').value;
+      const input = document.getElementById('auth-input').value;
+      document.getElementById('user-display-name').innerText = `${role}: ${input.split('@')[0]}`;
+      closeModal('authModal');
+      showNotification(`Signed in successfully as ${role}!`);
+    }
+
+    // --- Tab 1: Render Agri Store Products ---
+    function renderProducts(items = products) {
+      const grid = document.getElementById('product-grid');
+      grid.innerHTML = '';
+      if (items.length === 0) {
+        grid.innerHTML = `<p class="col-span-full text-center text-stone-500 py-10 font-medium">No matching agricultural supplies found.</p>`;
+        return;
+      }
+      items.forEach(p => {
+        grid.innerHTML += `
+          <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col justify-between hover:shadow-md transition">
+            <div>
+              <img src="${p.img}" alt="${p.name}" class="w-full h-44 object-cover">
+              <div class="p-4">
+                <span class="text-[11px] font-bold uppercase bg-agri-50 text-agri-800 px-2.5 py-1 rounded-full border border-agri-200">${p.category}</span>
+                <h3 class="font-bold text-stone-900 text-base mt-2.5 leading-snug">${p.name}</h3>
+                <p class="text-xs text-stone-500 mt-1">Packaging: ${p.unit}</p>
+              </div>
+            </div>
+            <div class="p-4 pt-0 flex items-center justify-between border-t border-stone-100 mt-2">
+              <span class="text-lg font-extrabold text-agri-800">${formatPrice(p.priceUSD)}</span>
+              <button onclick="addToCart(${p.id})" class="bg-agri-800 hover:bg-agri-900 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-cart-plus"></i> Add
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function filterCategory(cat, btn) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(b => {
+        b.className = "cat-btn bg-white border border-stone-200 text-stone-700 hover:bg-agri-50 px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-sm";
+      });
+      btn.className = "cat-btn bg-agri-800 text-white px-4 py-2 rounded-xl text-sm font-semibold whitespace-nowrap shadow-sm";
+      renderProducts(cat === 'all' ? products : products.filter(p => p.category === cat));
+    }
+
+    function filterProducts() {
+      const q = document.getElementById('search-product').value.toLowerCase();
+      let res = products.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      if (currentCategory !== 'all') res = res.filter(p => p.category === currentCategory);
+      renderProducts(res);
+    }
+
+    // --- Side Cart Drawer ---
+    function addToCart(id) {
+      const prod = products.find(p => p.id === id);
+      const exist = cart.find(i => i.id === id);
+      if (exist) exist.qty += 1;
+      else cart.push({ ...prod, qty: 1 });
+      updateCartBadge();
+      showNotification(`Added ${prod.name} to order cart.`);
+    }
+
+    function updateCartBadge() {
+      const total = cart.reduce((sum, item) => sum + item.qty, 0);
+      document.getElementById('cart-badge').innerText = total;
+    }
+
+    function openCartDrawer() {
+      updateCartDrawer();
+      openModal('cart-modal');
+    }
+
+    function updateCartDrawer() {
+      const container = document.getElementById('cart-items');
+      container.innerHTML = '';
+      if (cart.length === 0) {
+        container.innerHTML = `<p class="text-center text-stone-500 py-10 font-medium">Your cart is empty.</p>`;
+        document.getElementById('cart-total').innerText = formatPrice(0);
+      } else {
+        let sumUSD = 0;
+        cart.forEach(item => {
+          sumUSD += item.priceUSD * item.qty;
+          container.innerHTML += `
+            <div class="flex justify-between items-center bg-stone-50 p-3 rounded-xl border border-stone-200">
+              <div>
+                <h4 class="font-bold text-sm text-stone-900">${item.name}</h4>
+                <p class="text-xs text-stone-500">${formatPrice(item.priceUSD)} x ${item.qty}</p>
+              </div>
+              <div class="flex items-center space-x-2">
+                <button onclick="changeQty(${item.id}, -1)" class="w-7 h-7 bg-white border rounded-lg font-bold text-stone-700">-</button>
+                <span class="text-xs font-bold">${item.qty}</span>
+                <button onclick="changeQty(${item.id}, 1)" class="w-7 h-7 bg-white border rounded-lg font-bold text-stone-700">+</button>
+              </div>
+            </div>
+          `;
+        });
+        document.getElementById('cart-total').innerText = formatPrice(sumUSD);
+      }
+    }
+
+    function closeCartDrawer() { closeModal('cart-modal'); }
+
+    function changeQty(id, delta) {
+      const item = cart.find(i => i.id === id);
+      if (item) {
+        item.qty += delta;
+        if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+      }
+      updateCartBadge();
+      updateCartDrawer();
+    }
+
+    function checkoutCart() {
+      if (cart.length === 0) return;
+      showNotification('Order confirmed! Shipment dispatched to your registered farm location.');
+      cart = [];
+      updateCartBadge();
+      closeCartDrawer();
+    }
+
+    // --- Tab 2: Marketplace Listings ---
+    function previewUploadName(input) {
+      if (input.files && input.files[0]) {
+        document.getElementById('file-chosen-label').innerText = "Attached: " + input.files[0].name;
+      }
+    }
+
+    function handleNewListing(e) {
+      e.preventDefault();
+      const crop = document.getElementById('crop-name').value;
+      const qty = document.getElementById('crop-qty').value;
+      const unit = document.getElementById('crop-unit').value;
+      const priceUSD = parseFloat(document.getElementById('crop-price').value) || 0;
+      const location = document.getElementById('crop-location').value;
+
+      listings.unshift({
+        id: Date.now(),
+        crop, qty: `${qty} ${unit}`, priceUSD, location,
+        img: 'https://placehold.co/400x300/166534/ffffff?text=' + encodeURIComponent(crop)
+      });
+      renderListings();
+      document.getElementById('listing-form').reset();
+      document.getElementById('file-chosen-label').innerText = '';
+      showNotification('Harvest offer published to international marketplace!');
+    }
+
+    function renderListings() {
+      const container = document.getElementById('listings-container');
+      document.getElementById('listing-count').innerText = `${listings.length} Active`;
+      container.innerHTML = '';
+      listings.forEach(item => {
+        container.innerHTML += `
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200 flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <div class="flex items-center gap-4 w-full sm:w-auto">
+              <img src="${item.img}" alt="${item.crop}" class="w-16 h-16 rounded-xl object-cover">
+              <div>
+                <h4 class="font-bold text-stone-900">${item.crop}</h4>
+                <p class="text-xs text-stone-500 mt-0.5">
+                  <i class="fa-solid fa-weight-scale text-agri-700 mr-1"></i>${item.qty} &bull; 
+                  <i class="fa-solid fa-location-dot text-harvest-600 ml-1 mr-1"></i>${item.location}
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-4 border-t sm:border-0 pt-3 sm:pt-0 border-stone-100">
+              <span class="font-bold text-agri-800 text-base">${formatPrice(item.priceUSD)} / Unit</span>
+              <button onclick="showNotification('Inquiry message dispatched to harvest owner!')" class="bg-harvest-500 hover:bg-harvest-600 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition shadow-sm">
+                Contact Farmer
+              </button>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    // --- Tab 3: Mandi Rates ---
+    function renderMarketData() {
+      const cards = document.getElementById('market-cards');
+      const tbody = document.getElementById('market-table-body');
+      cards.innerHTML = '';
+      tbody.innerHTML = '';
+
+      marketRates.forEach(rate => {
+        const isUp = rate.trend === 'up';
+        const trendClass = isUp ? 'text-agri-700 bg-agri-50' : (rate.trend === 'down' ? 'text-rose-700 bg-rose-50' : 'text-stone-600 bg-stone-100');
+        const icon = isUp ? 'fa-arrow-trend-up' : (rate.trend === 'down' ? 'fa-arrow-trend-down' : 'fa-minus');
+
+        cards.innerHTML += `
+          <div class="bg-white p-4 rounded-2xl shadow-sm border border-stone-200">
+            <p class="text-xs font-bold text-stone-400 uppercase">${rate.market}</p>
+            <h4 class="font-bold text-stone-900 text-base mt-1">${rate.commodity}</h4>
+            <div class="flex justify-between items-center mt-3">
+              <span class="text-lg font-extrabold text-stone-900">${formatPrice(rate.priceUSD)}</span>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-lg ${trendClass} flex items-center gap-1">
+                <i class="fa-solid ${icon}"></i> ${rate.change}
+              </span>
+            </div>
+          </div>
+        `;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-stone-50 transition">
+            <td class="p-4 font-bold text-stone-900">${rate.commodity}</td>
+            <td class="p-4 text-stone-600 font-medium">${rate.market}</td>
+            <td class="p-4 font-bold text-agri-800">${formatPrice(rate.priceUSD)}</td>
+            <td class="p-4 font-bold ${isUp ? 'text-agri-700' : 'text-rose-600'}">${rate.change}</td>
+            <td class="p-4">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${trendClass} inline-flex items-center gap-1">
+                <i class="fa-solid ${icon}"></i> ${rate.trend.toUpperCase()}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function filterMarketTable() {
+      const q = document.getElementById('search-market').value.toLowerCase();
+      const tbody = document.getElementById('market-table-body');
+      tbody.innerHTML = '';
+      
+      const res = marketRates.filter(r => r.commodity.toLowerCase().includes(q) || r.market.toLowerCase().includes(q));
+      res.forEach(rate => {
+        const isUp = rate.trend === 'up';
+        const trendClass = isUp ? 'text-agri-700 bg-agri-50' : 'text-rose-700 bg-rose-50';
+        const icon = isUp ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down';
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-stone-50 transition">
+            <td class="p-4 font-bold text-stone-900">${rate.commodity}</td>
+            <td class="p-4 text-stone-600 font-medium">${rate.market}</td>
+            <td class="p-4 font-bold text-agri-800">${formatPrice(rate.priceUSD)}</td>
+            <td class="p-4 font-bold ${isUp ? 'text-agri-700' : 'text-rose-600'}">${rate.change}</td>
+            <td class="p-4">
+              <span class="px-2.5 py-1 rounded-lg text-xs font-bold ${trendClass} inline-flex items-center gap-1">
+                <i class="fa-solid ${icon}"></i> ${rate.trend.toUpperCase()}
+              </span>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    // --- Tab 4: Videos ---
+    function renderVideos() {
+      const grid = document.getElementById('video-grid');
+      grid.innerHTML = '';
+      videos.forEach(v => {
+        grid.innerHTML += `
+          <div class="bg-white rounded-2xl shadow-sm border border-stone-200 overflow-hidden flex flex-col justify-between">
+            <div>
+              <div class="relative bg-stone-900 aspect-video flex items-center justify-center group cursor-pointer" onclick="showNotification('Playing tutorial: ${v.title}')">
+                <i class="fa-solid fa-circle-play text-5xl text-agri-500 group-hover:scale-110 transition"></i>
+              </div>
+              <div class="p-4">
+                <h3 class="font-bold text-stone-900 text-base leading-snug">${v.title}</h3>
+                <p class="text-xs text-stone-500 mt-2 line-clamp-2">${v.desc}</p>
+                <p class="text-xs font-semibold text-agri-700 mt-3 flex items-center gap-1">
+                  <i class="fa-solid fa-user-check"></i> ${v.author}
+                </p>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function handleNewVideo(e) {
+      e.preventDefault();
+      const title = document.getElementById('vid-title').value;
+      const author = document.getElementById('vid-author').value;
+      const desc = document.getElementById('vid-desc').value;
+
+      videos.unshift({ id: Date.now(), title, author, desc });
+      renderVideos();
+      closeModal('videoModal');
+      showNotification('Tutorial video published successfully!');
+    }
+
+    // --- Tab 5: Logistics & Equipment Tracker ---
+    function renderRentals() {
+      const container = document.getElementById('rentals-container');
+      document.getElementById('rental-count').innerText = `${rentals.length} Active`;
+      container.innerHTML = '';
+      rentals.forEach(r => {
+        container.innerHTML += `
+          <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200 space-y-1">
+            <div class="flex justify-between items-start">
+              <h4 class="font-bold text-xs text-stone-900">${r.machine}</h4>
+              <span class="text-[10px] font-bold bg-harvest-50 text-harvest-700 px-2 py-0.5 rounded-md border border-harvest-200">${r.status}</span>
+            </div>
+            <p class="text-xs text-stone-500">Duration: <strong>${r.days} Days</strong></p>
+            <p class="text-xs font-bold text-agri-800">${formatPrice(r.rateUSD)} / day</p>
+          </div>
+        `;
+      });
+    }
+
+    function renderTasks() {
+      const container = document.getElementById('tasks-container');
+      document.getElementById('task-count').innerText = `${tasks.length} Tasks`;
+      container.innerHTML = '';
+      tasks.forEach(t => {
+        container.innerHTML += `
+          <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200 space-y-1">
+            <div class="flex justify-between items-start">
+              <h4 class="font-bold text-xs text-stone-900">${t.name}</h4>
+              <span class="text-[10px] font-bold bg-agri-100 text-agri-800 px-2 py-0.5 rounded-md">${t.status}</span>
+            </div>
+            <p class="text-xs text-stone-500"><i class="fa-solid fa-location-dot text-agri-700 mr-1"></i>${t.field}</p>
+            <p class="text-[11px] text-stone-400 font-medium"><i class="fa-regular fa-calendar text-stone-500 mr-1"></i>${t.date}</p>
+          </div>
+        `;
+      });
+    }
+
+    function renderStorage() {
+      const container = document.getElementById('storage-container');
+      container.innerHTML = '';
+      storageBins.forEach(b => {
+        const pct = Math.round((b.usedTons / b.capTons) * 100);
+        container.innerHTML += `
+          <div class="bg-stone-50 p-3.5 rounded-xl border border-stone-200 space-y-2">
+            <div class="flex justify-between text-xs font-bold text-stone-800">
+              <span>${b.bin}</span>
+              <span>${b.usedTons} / ${b.capTons} Tons</span>
+            </div>
+            <div class="w-full bg-stone-200 h-2.5 rounded-full overflow-hidden">
+              <div class="bg-agri-700 h-full rounded-full" style="width: ${pct}%"></div>
+            </div>
+            <p class="text-[10px] text-stone-400 text-right font-semibold">${pct}% Capacity Filled</p>
+          </div>
+        `;
+      });
+    }
+
+    function handleNewRental(e) {
+      e.preventDefault();
+      const machine = document.getElementById('rent-type').value;
+      const days = parseInt(document.getElementById('rent-days').value) || 1;
+      const rateUSD = parseFloat(document.getElementById('rent-rate').value) || 50;
+
+      rentals.unshift({ id: Date.now(), machine, days, rateUSD, status: 'Active Booking' });
+      renderRentals();
+      closeModal('equipmentModal');
+      showNotification('Equipment rental reservation confirmed!');
+    }
+
+    function handleNewTask(e) {
+      e.preventDefault();
+      const name = document.getElementById('task-title').value;
+      const field = document.getElementById('task-field').value;
+      const date = document.getElementById('task-date').value;
+
+      tasks.unshift({ id: Date.now(), name, field, date, status: 'Scheduled' });
+      renderTasks();
+      closeModal('taskModal');
+      showNotification('Field operation added to farm calendar!');
+    }
+
+    function handleNewStorage(e) {
+      e.preventDefault();
+      const bin = document.getElementById('bin-name').value;
+      const usedTons = parseFloat(document.getElementById('bin-qty').value) || 0;
+      const capTons = parseFloat(document.getElementById('bin-cap').value) || 100;
+
+      storageBins.unshift({ id: Date.now(), bin, usedTons, capTons });
+      renderStorage();
+      closeModal('storageModal');
+      showNotification('Storage silo inventory updated!');
+    }
+
+    // --- App Initializer ---
+    window.onload = function() {
+      renderProducts();
+      renderListings();
+      renderMarketData();
+      renderVideos();
+      renderRentals();
+      renderTasks();
+      renderStorage();
+    };
+  </script>
+</body>
+</html>
+```
